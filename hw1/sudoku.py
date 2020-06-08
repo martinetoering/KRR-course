@@ -63,8 +63,8 @@ def main():
         if verbose:
             print("Solving sudoku using the ASP encoding..");
             timer.start();
-        with suppress_stdout_stderr():
-            solved_sudoku = solve_sudoku_ASP(sudoku,k);
+        # with suppress_stdout_stderr():
+        solved_sudoku = solve_sudoku_ASP(sudoku,k);
         if verbose:
             timer.stop();
     elif solver == "ilp":
