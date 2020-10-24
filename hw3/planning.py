@@ -38,15 +38,6 @@ class PlanningProblem:
         except AttributeError:
             pass
 
-        # new_clauses = []
-        # for clause in clauses:
-        #     if clause.op == '~':
-        #         # new_clauses.append(expr('~' + str(clause.args[0])))
-        #         new_clause = Expr('~' + clause.op, clause.args)
-        #         new_clauses.append(new_clause)
-        #     else:
-        #         new_clauses.append(clause)
-        # return new_clauses
         new_clauses = []
         for clause in clauses:
             new_clauses.append(clause)
@@ -54,7 +45,8 @@ class PlanningProblem:
 
     def goal_test(self):
         """Checks if the goals have been reached"""
-        return all(goal in self.initial for goal in self.goals)
+        kb = FolKB(self.initial)
+        return first(fol_bc_and(kb,self.goals,{})) is not False
 
     def act(self, action):
         """
@@ -158,16 +150,6 @@ class Action:
                 kb.tell(self.substitute(clause, args))
 
         return kb
-
-
-def goal_test(goals, state):
-    """Generic goal testing helper function"""
-
-    if isinstance(state, list):
-        kb = FolKB(state)
-    else:
-        kb = state
-    return all(kb.ask(q) is not False for q in goals)
 
 
 ###

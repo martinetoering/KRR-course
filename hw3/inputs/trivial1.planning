@@ -1,0 +1,10 @@
+# Initial state
+initial: (On(A))
+# Goals
+goals: (~On(x) & Removed(x))
+# Action TurnOff(x)
+action: TurnOff(x); (On(x)); (Off(x) & ~On(x))
+# Action Remove(x)
+action: Remove(x); (Off(x)); (Removed(x))
+# T_max
+t_max: 10

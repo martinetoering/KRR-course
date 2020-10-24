@@ -92,7 +92,7 @@ together with a plan for this planning problem that achieves the goals in the pl
 
 For this exercise, you may assume that all planning problems satisfy the following conditions:
 - Each variable named in an action occurs in a non-negated expression in the precondition of the action.
-- The goals of a planning problem contain no variables.
+- Each variable named in the goals occurs in a non-negated expression in the goals.
 
 ## Calling `asp_planner.py`
 

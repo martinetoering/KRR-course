@@ -1,4 +1,4 @@
-#!python
+#!/usr/bin/env python3
 
 import sys, os
 import argparse
@@ -14,87 +14,87 @@ from sudoku_core import propagate
 ### Main
 def main():
     # Take command line arguments
-    parser = argparse.ArgumentParser();
-    # parser.add_argument("input", help="Input file");
+    parser = argparse.ArgumentParser()
+    # parser.add_argument("input", help="Input file")
     parser.add_argument("-i", "--input", required=True, help="input file")
     parser.add_argument("-v", "--verbose", help="verbose mode", action="store_true")
-    parser.add_argument("-s", "--solver", choices=["sat", "csp", "asp", "ilp", "prop"], default="prop", help="selects which solver to use (default: prop)");
-    args = parser.parse_args(map(lambda x: x.lower(),sys.argv[1:]));
+    parser.add_argument("-s", "--solver", choices=["sat", "csp", "asp", "ilp", "prop"], default="prop", help="selects which solver to use (default: prop)")
+    args = parser.parse_args(map(lambda x: x.lower(),sys.argv[1:]))
 
-    input = args.input;
-    verbose = args.verbose;
-    solver = args.solver;
+    input = args.input
+    verbose = args.verbose
+    solver = args.solver
 
     # Read sudoku from input file
     if verbose:
-        print("Reading sudoku from " + input + "..");
-    k,sudoku = read_sudoku_from_file(input);
+        print("Reading sudoku from " + input + "..")
+    k,sudoku = read_sudoku_from_file(input)
     if sudoku == None:
-        print("Exiting..");
-        return;
+        print("Exiting..")
+        return
 
     # Print information, in verbose mode
     if verbose:
-        print("Input sudoku:");
-        print(pretty_repr(sudoku,k));
+        print("Input sudoku:")
+        print(pretty_repr(sudoku,k))
 
     # Solve the sudoku using the selected solver
-    solved_sudoku = None;
+    solved_sudoku = None
     if solver == "sat":
-        timer = Timer(name="solving-time", text="Did SAT encoding & solving in {:.2f} seconds");
+        timer = Timer(name="solving-time", text="Did SAT encoding & solving in {:.2f} seconds")
         if verbose:
-            print("Solving sudoku using the SAT encoding..");
-            timer.start();
+            print("Solving sudoku using the SAT encoding..")
+            timer.start()
         with suppress_stdout_stderr():
-            solved_sudoku = solve_sudoku_SAT(sudoku,k);
+            solved_sudoku = solve_sudoku_SAT(sudoku,k)
         if verbose:
-            timer.stop();
+            timer.stop()
     elif solver == "csp":
-        timer = Timer(name="solving-time", text="Did CSP encoding & solving in {:.2f} seconds");
+        timer = Timer(name="solving-time", text="Did CSP encoding & solving in {:.2f} seconds")
         if verbose:
-            print("Solving sudoku using the CSP encoding..");
-            timer.start();
-        with suppress_stdout_stderr():
-            solved_sudoku = solve_sudoku_CSP(sudoku,k);
-        if verbose:
-            timer.stop();
-    elif solver == "asp":
-        timer = Timer(name="solving-time", text="Did ASP encoding & solving in {:.2f} seconds");
-        if verbose:
-            print("Solving sudoku using the ASP encoding..");
-            timer.start();
+            print("Solving sudoku using the CSP encoding..")
+            timer.start()
         # with suppress_stdout_stderr():
-        solved_sudoku = solve_sudoku_ASP(sudoku,k);
+        solved_sudoku = solve_sudoku_CSP(sudoku,k)
         if verbose:
-            timer.stop();
+            timer.stop()
+    elif solver == "asp":
+        timer = Timer(name="solving-time", text="Did ASP encoding & solving in {:.2f} seconds")
+        if verbose:
+            print("Solving sudoku using the ASP encoding..")
+            timer.start()
+        with suppress_stdout_stderr():
+            solved_sudoku = solve_sudoku_ASP(sudoku,k)
+        if verbose:
+            timer.stop()
     elif solver == "ilp":
-        timer = Timer(name="solving-time", text="Did ILP encoding & solving in {:.2f} seconds");
+        timer = Timer(name="solving-time", text="Did ILP encoding & solving in {:.2f} seconds")
         if verbose:
-            print("Solving sudoku using the ILP encoding..");
-            timer.start();
+            print("Solving sudoku using the ILP encoding..")
+            timer.start()
         with suppress_stdout_stderr():
-            solved_sudoku = solve_sudoku_ILP(sudoku,k);
+            solved_sudoku = solve_sudoku_ILP(sudoku,k)
         if verbose:
-            timer.stop();
+            timer.stop()
     elif solver == "prop":
-        timer = Timer(name="solving-time", text="Did recursive solving with propagation in {:.2f} seconds");
+        timer = Timer(name="solving-time", text="Did recursive solving with propagation in {:.2f} seconds")
         if verbose:
-            print("Solving sudoku using recursion and propagation..");
-            timer.start();
-        with suppress_stdout_stderr():
-            solved_sudoku = solve_sudoku_prop(sudoku,k);
+            print("Solving sudoku using recursion and propagation..")
+            timer.start()
+        # with suppress_stdout_stderr():
+        solved_sudoku = solve_sudoku_prop(sudoku,k)
         if verbose:
-            timer.stop();
+            timer.stop()
 
     # Print the solved sudoku
     if solved_sudoku == None:
-        print("NO SOLUTION FOUND");
+        print("NO SOLUTION FOUND")
     else:
         if check_solved_sudoku(solved_sudoku,k) == True:
-            print(pretty_repr(solved_sudoku,k));
+            print(pretty_repr(solved_sudoku,k))
         else:
-            print("INCORRECT SOLUTION FOUND");
-            print(pretty_repr(solved_sudoku,k));
+            print("INCORRECT SOLUTION FOUND")
+            print(pretty_repr(solved_sudoku,k))
 
 
 ### Check if a solved sudoku is correct
@@ -103,95 +103,95 @@ def check_solved_sudoku(sudoku,k):
     # (return False if not)
     for row in sudoku:
         if set(row) != set(range(1,k**2+1)):
-            return False;
+            return False
     # Check if each row has different values
     # (return False if not)
     for j in range(k**2):
         if set(sudoku[i][j] for i in range(k**2)) != set(range(1,k**2+1)):
-            return False;
+            return False
     # Check if each block has different values
     # (return False if not)
     for i1 in range(0,k):
         for j1 in range(0,k):
-            values = [];
+            values = []
             for i2 in range(0,k):
                 for j2 in range(0,k):
-                    i = i1*k + i2;
-                    j = j1*k + j2;
-                    values.append(sudoku[i][j]);
+                    i = i1*k + i2
+                    j = j1*k + j2
+                    values.append(sudoku[i][j])
             if set(values) != set(range(1,k**2+1)):
-                return False;
+                return False
     # If no check failed, return True
-    return True;
+    return True
 
 ### Read sudoku from file
 def read_sudoku_from_file(filename):
     try:
-        file = open(filename, "r");
-        sudoku = [];
+        file = open(filename, "r")
+        sudoku = []
         for line in file.readlines():
             if line.strip() != "":
-                row = list(map(int,line[:-1].strip().split(" ")));
-                sudoku.append(row);
-        height = len(sudoku);
-        k = int(math.sqrt(height));
+                row = list(map(int,line[:-1].strip().split(" ")))
+                sudoku.append(row)
+        height = len(sudoku)
+        k = int(math.sqrt(height))
         if height == k**2:
-            rows_correct = True;
+            rows_correct = True
             for row in sudoku:
                 if len(row) != height:
-                    rows_correct = False;
+                    rows_correct = False
                 for entry in row:
                     if not (isinstance(entry, int) and 0 <= entry and entry <= height):
-                        rows_correct = False;
+                        rows_correct = False
             if not rows_correct:
-                print("Wrong input format");
-                return None,None;
+                print("Wrong input format")
+                return None,None
             else:
-                return (k,sudoku);
+                return (k,sudoku)
         else:
-            print("Wrong input format");
-            return None,None;
+            print("Wrong input format")
+            return None,None
     except Exception as e:
-        print("Something went wrong while reading from " + filename + " (" + str(e) + ")");
-        return None,None;
+        print("Something went wrong while reading from " + filename + " (" + str(e) + ")")
+        return None,None
 
 ### Plain representation (for file storage)
 def plain_repr(sudoku,k):
-    repr = "";
+    repr = ""
     # Add the rows plainly, with spaces as separator
     for row in sudoku:
-        repr += " ".join(map(str,row)) + "\n";
+        repr += " ".join(map(str,row)) + "\n"
     # Return the constructed string (without trailing '\n')
-    return repr[:-1];
+    return repr[:-1]
 
 ### Pretty printing representation
 def pretty_repr(sudoku,k):
-    repr = "";
-    numwidth = len(str(k**2));
+    repr = ""
+    numwidth = len(str(k**2))
     def pretty_line(k):
-        return "+" + "+".join(["-"*((numwidth+1)*k+1)]*k) + "+\n";
+        return "+" + "+".join(["-"*((numwidth+1)*k+1)]*k) + "+\n"
 
     # Add a line separator at the beginning
-    repr += pretty_line(k);
-    rownum = 0;
+    repr += pretty_line(k)
+    rownum = 0
     # Go through all rows of the sudoku
     for i in range(0,k):
         for j in range(0,k):
             # Add a row of the sudoku
-            repr += "| ";
+            repr += "| "
             for u in range(0,k):
                 for v in range(0,k):
                     if sudoku[rownum][u*k+v] != 0:
-                        repr += str(sudoku[rownum][u*k+v]).zfill(numwidth) + " ";
+                        repr += str(sudoku[rownum][u*k+v]).zfill(numwidth) + " "
                     else:
-                        repr += " "*numwidth + " ";
-                repr += "| ";
-            repr += "\n";
-            rownum += 1;
+                        repr += " "*numwidth + " "
+                repr += "| "
+            repr += "\n"
+            rownum += 1
         # Add a line separator after every k'th row
-        repr += pretty_line(k);
+        repr += pretty_line(k)
     # Return the constructed string (without trailing '\n')
-    return repr[:-1];
+    return repr[:-1]
 
 ###
 class suppress_stdout_stderr(object):
@@ -231,129 +231,129 @@ class suppress_stdout_stderr(object):
 def solve_sudoku_prop(sudoku,k):
 
     # Initialize data structure
-    sudoku_possible_values = [];
+    sudoku_possible_values = []
     for row in sudoku:
-        row_possibilities = [];
+        row_possibilities = []
         for element in row:
             if element == 0:
-                possibilities = list(range(1,k**2+1));
+                possibilities = list(range(1,k**2+1))
             else:
-                possibilities = [element];
-            row_possibilities.append(possibilities);
-        sudoku_possible_values.append(row_possibilities);
+                possibilities = [element]
+            row_possibilities.append(possibilities)
+        sudoku_possible_values.append(row_possibilities)
 
     # Find a cell where there is still more than one possibility
     def find_uncertain_cell(sudoku_possible_values):
         for i in range(k**2):
             for j in range(k**2):
-                possibilities = sudoku_possible_values[i][j];
+                possibilities = sudoku_possible_values[i][j]
                 if len(possibilities) > 1:
-                    return (i,j);
-        return None;
+                    return (i,j)
+        return None
 
     # Check if we ran into a contradiction
     def contradiction(sudoku_possible_values):
         # Contradiction type 1: some cell has no further possible values
         for i in range(k**2):
             for j in range(k**2):
-                possibilities = sudoku_possible_values[i][j];
+                possibilities = sudoku_possible_values[i][j]
                 if len(possibilities) == 0:
-                    return True;
+                    return True
         # Contradiction type 2a: two cells in the same row are assigned the same value
         for i in range(k**2):
-            certain_values = [];
+            certain_values = []
             for j in range(k**2):
-                possibilities = sudoku_possible_values[i][j];
+                possibilities = sudoku_possible_values[i][j]
                 if len(possibilities) == 1:
-                    value = possibilities[0];
+                    value = possibilities[0]
                     if value in certain_values:
-                        return True;
+                        return True
                     else:
-                        certain_values.append(value);
+                        certain_values.append(value)
         # Contradiction type 2b: two cells in the same column are assigned the same value
         for j in range(k**2):
-            certain_values = [];
+            certain_values = []
             for i in range(k**2):
-                possibilities = sudoku_possible_values[i][j];
+                possibilities = sudoku_possible_values[i][j]
                 if len(possibilities) == 1:
-                    value = possibilities[0];
+                    value = possibilities[0]
                     if value in certain_values:
-                        return True;
+                        return True
                     else:
-                        certain_values.append(value);
+                        certain_values.append(value)
         # Contradiction type 2c: two cells in the same block are assigned the same value
         for i1 in range(k):
             for j1 in range(k):
-                certain_values = [];
+                certain_values = []
                 for i2 in range(k):
                     for j2 in range(k):
-                        i = i1*k + i2;
-                        j = j1*k + j2;
-                        possibilities = sudoku_possible_values[i][j];
+                        i = i1*k + i2
+                        j = j1*k + j2
+                        possibilities = sudoku_possible_values[i][j]
                         if len(possibilities) == 1:
-                            value = possibilities[0];
+                            value = possibilities[0]
                             if value in certain_values:
-                                return True;
+                                return True
                             else:
-                                certain_values.append(value);
-        return False;
+                                certain_values.append(value)
+        return False
 
     # Make a deep copy
     def deep_copy(sudoku_possible_values):
-        copy = [];
+        copy = []
         for row in sudoku_possible_values:
-            row_copy = [];
+            row_copy = []
             for element in row:
-                element_copy = element.copy();
-                row_copy.append(element_copy);
-            copy.append(row_copy);
-        return copy;
+                element_copy = element.copy()
+                row_copy.append(element_copy)
+            copy.append(row_copy)
+        return copy
 
     # Recursive function to solve the sudoku, using propagate()
     def solve_recursively(sudoku_possible_values):
         # Check if we ran into a contradiction:
         if contradiction(sudoku_possible_values):
-            return None;
+            return None
         else:
             # Propagate
-            sudoku_possible_values = propagate(sudoku_possible_values,k);
+            sudoku_possible_values = propagate(sudoku_possible_values,k)
             # Check for contradictions
             if contradiction(sudoku_possible_values):
-                return None;
+                return None
             # Find a cell that is still uncertain
-            uncertain_cell = find_uncertain_cell(sudoku_possible_values);
+            uncertain_cell = find_uncertain_cell(sudoku_possible_values)
             if uncertain_cell == None:
-                return sudoku_possible_values;
+                return sudoku_possible_values
             else:
-                i,j = uncertain_cell;
+                i,j = uncertain_cell
                 # Recurse on the different values for cell i,j
-                possibilities = sudoku_possible_values[i][j];
+                possibilities = sudoku_possible_values[i][j]
                 for poss in possibilities:
-                    sudoku_possible_values_copy = deep_copy(sudoku_possible_values);
-                    sudoku_possible_values_copy[i][j] = [poss];
-                    answer = solve_recursively(sudoku_possible_values_copy);
+                    sudoku_possible_values_copy = deep_copy(sudoku_possible_values)
+                    sudoku_possible_values_copy[i][j] = [poss]
+                    answer = solve_recursively(sudoku_possible_values_copy)
                     if answer != None:
-                        return answer;
+                        return answer
             # If no solution was found in the recursion, conclude there is no solution
-            return None;
+            return None
 
     # Solve the sudoku by recursion
-    solution = solve_recursively(sudoku_possible_values);
+    solution = solve_recursively(sudoku_possible_values)
     if solution == None:
-        return None;
+        return None
     # Transform the data structure into a solution, and return it
-    solved_sudoku = [];
+    solved_sudoku = []
     for i in range(k**2):
-        row = [];
+        row = []
         for j in range(k**2):
-            possibilities = solution[i][j];
+            possibilities = solution[i][j]
             if len(possibilities) != 1:
-                return None;
+                return None
             else:
-                row.append(possibilities[0]);
-        solved_sudoku.append(row);
-    return solved_sudoku;
+                row.append(possibilities[0])
+        solved_sudoku.append(row)
+    return solved_sudoku
 
 ### Call main()
 if __name__ == "__main__":
-    main();
+    main()

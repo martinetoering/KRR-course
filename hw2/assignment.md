@@ -25,7 +25,7 @@ To make this concrete, for this exercise you may consider propositional reasonin
 *Remarks:*
 - Note that the formulas in &Phi; and the formula &varphi; may be propositional logic formulas of arbitrarily complex structure, where the satisfiability algorithm that you may use only works for formulas in conjunctive normal form.
 - Describe an algorithm for the task of propositional reasoning in enough detail so that one of your class mates can understand how and why it works, and avoid spelling out unnecessary details. (This can be a tricky balance.)
-- If the working of your algorithm is based on results (e.g., from the reading material for the course), clearly explain which results.
+- If the working of your algorithm is based on theoretical results (e.g., theoretical results from the reading material for the course), clearly explain which results.
 
 ---
 
@@ -84,7 +84,7 @@ In this assignment, you will show that cardinality rules are not a 'true' langua
 n { item(1..u) } m.
 ```
 
-*Assignment:* Give an answer set program `P` (without cardinality rules, choice rules, aggregates, etc) that when combined with the line `#show item/1.` yields exactly the same answer sets as the answer set program consisting of the line `n { item(1..u) } m.`, for each combination of declared values for the constants `n`, `m` and `u`. Explain how your answer set program `P` works.
+*Assignment:* Give an answer set program `P` (in the basic language of answer set programming) that when combined with the line `#show item/1.` yields exactly the same answer sets as the answer set program consisting of the line `n { item(1..u) } m.`, for each combination of declared values for the constants `n`, `m` and `u`. Explain how your answer set program `P` works. The basic language for answer set programming only includes rules of the form `a :- b1, ..., bn, not c1, ..., not cm.` (this includes facts `a.` and constraints `:- b1, ..., bn, not c1, ..., not cm.`, for example), and does not include cardinality rules, choice rules, aggregates, etc.
 
 *Hints:*
 - Begin with example values for `n`, `m` and `u`. For example, with `#const n=2.`, `#const m=3.` and `#const u=4.` Then, make sure that your program works also for other values of `n`, `m` and `u`.
